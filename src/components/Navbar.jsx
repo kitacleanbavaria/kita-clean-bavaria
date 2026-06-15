@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { signOut } from 'firebase/auth';
-import { auth } from '../firebase/config';
 import { useAdmin } from '../context/AdminContext';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
 import { IconStar, IconMenu, IconClose } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 
-const Navbar = ({ user }) => {
+const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [headerData, setHeaderData] = useState({
@@ -21,12 +17,16 @@ const Navbar = ({ user }) => {
     });
     const navigate = useNavigate();
     const location = useLocation();
-    const { isAdmin } = useAdmin();
+    const { user, isAdmin } = useAdmin();
     const { t } = useLanguage();
 
     useEffect(() => {
         const fetchHeader = async () => {
             try {
+                const [{ doc, getDoc }, { db }] = await Promise.all([
+                    import('firebase/firestore'),
+                    import('../firebase/config'),
+                ]);
                 const docRef = doc(db, 'siteContent', 'home');
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists() && docSnap.data().header) {
@@ -41,6 +41,10 @@ const Navbar = ({ user }) => {
 
     const handleLogout = async () => {
         try {
+            const [{ signOut }, { auth }] = await Promise.all([
+                import('firebase/auth'),
+                import('../firebase/config'),
+            ]);
             await signOut(auth);
             setDropdownOpen(false);
             setIsOpen(false);

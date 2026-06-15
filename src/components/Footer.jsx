@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
 import { IconStar } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -25,6 +23,10 @@ const Footer = () => {
   useEffect(() => {
     const fetchFooter = async () => {
       try {
+        const [{ doc, getDoc }, { db }] = await Promise.all([
+          import('firebase/firestore'),
+          import('../firebase/config'),
+        ]);
         const docRef = doc(db, 'siteContent', 'home');
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {

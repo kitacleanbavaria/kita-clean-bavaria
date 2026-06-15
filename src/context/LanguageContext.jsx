@@ -1,6 +1,4 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
 import { useAdmin } from './AdminContext';
 
 const LanguageContext = createContext();
@@ -427,6 +425,10 @@ export const LanguageProvider = ({ children }) => {
             if (!user?.uid) return;
 
             try {
+                const [{ doc, getDoc }, { db }] = await Promise.all([
+                    import('firebase/firestore'),
+                    import('../firebase/config'),
+                ]);
                 const userSnap = await getDoc(doc(db, 'users', user.uid));
                 const storedLanguage = userSnap.data()?.languagePreference;
                 if (storedLanguage && dictionaries[storedLanguage]) {
@@ -445,6 +447,10 @@ export const LanguageProvider = ({ children }) => {
 
         setLanguageState(value);
         if (user?.uid) {
+            const [{ doc, setDoc }, { db }] = await Promise.all([
+                import('firebase/firestore'),
+                import('../firebase/config'),
+            ]);
             await setDoc(doc(db, 'users', user.uid), { languagePreference: value }, { merge: true });
         }
     }, [user?.uid]);
