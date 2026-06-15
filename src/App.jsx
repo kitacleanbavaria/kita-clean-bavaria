@@ -17,6 +17,7 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Settings from './pages/Settings';
 import MyQuotes from './pages/MyQuotes';
+import Impressum from './pages/Impressum';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -52,6 +53,7 @@ function App() {
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/settings" element={<Settings />} />
                                 <Route path="/quotes" element={<MyQuotes />} />
+                                <Route path="/impressum" element={<Impressum />} />
 
                                 <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                                 <Route path="/admin/home" element={<AdminRoute><AdminHomeEditor /></AdminRoute>} />
