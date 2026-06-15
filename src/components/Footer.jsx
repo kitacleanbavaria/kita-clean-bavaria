@@ -27,16 +27,25 @@ const Footer = () => {
           import('firebase/firestore'),
           import('../firebase/config'),
         ]);
-        const docRef = doc(db, 'siteContent', 'home');
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+        const homeRef = doc(db, 'siteContent', 'home');
+        const contactRef = doc(db, 'siteContent', 'contact');
+        const [homeSnap, contactSnap] = await Promise.all([getDoc(homeRef), getDoc(contactRef)]);
+        const contactData = contactSnap.exists() ? contactSnap.data() : {};
+
+        if (homeSnap.exists()) {
+          const data = homeSnap.data();
           setFooterData(prev => ({
             ...prev,
+            ...contactData,
             ...(data.footer || {}),
             logoImageUrl: data.header?.logoImageUrl || prev.logoImageUrl,
-            logoText: data.header?.logoText || data.footer?.companyName || prev.logoText,
+            logoText: data.header?.logoText || data.footer?.companyName || contactData.companyName || prev.logoText,
             logoSubtext: data.header?.logoSubtext || prev.logoSubtext,
+          }));
+        } else if (contactSnap.exists()) {
+          setFooterData(prev => ({
+            ...prev,
+            ...contactData,
           }));
         }
       } catch (error) {

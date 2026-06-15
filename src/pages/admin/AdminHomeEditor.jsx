@@ -26,7 +26,18 @@ const AdminHomeEditor = () => {
             { step: '2', title: 'We Plan', desc: 'We create a customized cleaning plan for you.' },
             { step: '3', title: 'We Clean', desc: 'Our trained team cleans with care and attention.' },
             { step: '4', title: 'You Enjoy', desc: 'A clean, safe, and happy environment every day.' }
-        ]
+        ],
+        footer: {
+            companyName: 'Isarkita',
+            tagline: 'Professional cleaning for kindergartens, offices, and homes. Safe, reliable, and eco-friendly.',
+            phone: '+49 123 456 789',
+            email: 'info@isarkita.de',
+            address: 'Munich, Germany',
+            hours: 'Mon - Fri: 8:00 - 18:00',
+            facebook: '',
+            twitter: '',
+            instagram: ''
+        }
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -83,6 +94,13 @@ const AdminHomeEditor = () => {
         const newSteps = [...content.processSteps];
         newSteps[index][field] = value;
         setContent(prev => ({ ...prev, processSteps: newSteps }));
+    };
+
+    const updateFooter = (field, value) => {
+        setContent(prev => ({
+            ...prev,
+            footer: { ...prev.footer, [field]: value }
+        }));
     };
 
     if (loading) return <div className="p-12 text-center">Loading...</div>;
@@ -260,6 +278,97 @@ const AdminHomeEditor = () => {
                             />
                         </div>
                     ))}
+                </div>
+
+                {/* Footer Section */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
+                    <h2 className="text-xl font-bold text-slate-800 mb-4">🦶 Footer</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Company Name</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                value={content.footer?.companyName || ''}
+                                onChange={(e) => updateFooter('companyName', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                value={content.footer?.phone || ''}
+                                onChange={(e) => updateFooter('phone', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+                            <input
+                                type="email"
+                                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                value={content.footer?.email || ''}
+                                onChange={(e) => updateFooter('email', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Business Hours</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                value={content.footer?.hours || ''}
+                                onChange={(e) => updateFooter('hours', e.target.value)}
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Footer Tagline</label>
+                            <textarea
+                                rows={2}
+                                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                value={content.footer?.tagline || ''}
+                                onChange={(e) => updateFooter('tagline', e.target.value)}
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Address</label>
+                            <textarea
+                                rows={2}
+                                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                value={content.footer?.address || ''}
+                                onChange={(e) => updateFooter('address', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Facebook URL</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                placeholder="https://facebook.com/..."
+                                value={content.footer?.facebook || ''}
+                                onChange={(e) => updateFooter('facebook', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Instagram URL</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                placeholder="https://instagram.com/..."
+                                value={content.footer?.instagram || ''}
+                                onChange={(e) => updateFooter('instagram', e.target.value)}
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Twitter URL</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                placeholder="https://twitter.com/..."
+                                value={content.footer?.twitter || ''}
+                                onChange={(e) => updateFooter('twitter', e.target.value)}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
