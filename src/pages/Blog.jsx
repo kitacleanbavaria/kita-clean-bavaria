@@ -60,24 +60,23 @@ const Blog = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
-            </div>
+            <div className="site-loader" aria-label="Loading"><span /></div>
         );
     }
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen inner-page blog-page">
             {/* Header */}
-            <div className="bg-blue-600 py-16">
+            <div className="inner-page-hero">
                 <div className="max-w-7xl mx-auto px-4 text-center">
+                    <p className="inner-page-kicker">Wissen & Einblicke</p>
                     <h1 className="text-4xl font-bold text-white mb-4">{t('blogTitle')}</h1>
                     <p className="text-blue-100 text-lg">{t('blogIntro')}</p>
                 </div>
             </div>
 
             {/* Blog Posts */}
-            <div className="py-20 bg-white">
+            <div className="premium-page-body">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {displayPosts.map((post, index) => {
@@ -85,7 +84,7 @@ const Blog = () => {
                             const imageHeight = index === 0 ? 'h-64 md:h-80' : 'h-52';
 
                             return (
-                            <div key={post.id} className={`bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition border border-slate-100 ${index === 0 ? 'md:col-span-2' : ''}`}>
+                            <div key={post.id} className={`blog-page-card ${index === 0 ? 'md:col-span-2' : ''}`}>
                                 <div className={`${imageHeight} bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center overflow-hidden`}>
                                     {postImageUrl ? (
                                         <img
@@ -119,7 +118,7 @@ const Blog = () => {
                                     <p className="text-slate-500">{post.excerpt}</p>
                                     <button
                                         onClick={() => setSelectedPost(post)}
-                                        className="text-blue-600 font-bold mt-4 hover:text-blue-800 flex items-center gap-1"
+                                        className="blog-read-more"
                                     >
                                         {t('readMore')}
                                         <IconArrowRight />
@@ -134,7 +133,7 @@ const Blog = () => {
 
             {selectedPost && (
                 <div className="fixed inset-0 z-50 bg-slate-900/70 px-4 py-6 overflow-y-auto">
-                    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    <div className="blog-modal max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
                         {getPostImageUrl(selectedPost) && (
                             <img
                                 src={getPostImageUrl(selectedPost)}
@@ -166,7 +165,7 @@ const Blog = () => {
                             </div>
                             <button
                                 onClick={() => setSelectedPost(null)}
-                                className="mt-8 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition"
+                                className="inner-primary-button mt-8"
                             >
                                 {t('cancel')}
                             </button>

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
-import { IconStar, IconMenu, IconClose } from './Icons';
+import { IconMenu, IconClose } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [headerData, setHeaderData] = useState({
-        logoText: 'Isarkita',
-        logoSubtext: 'REINIGUNG',
+        logoText: 'Kita Clean',
+        logoSubtext: 'BAVARIA',
         tagline: '',
         logoImageUrl: '',
         phoneNumber: '+49 123 456 789',
@@ -87,35 +87,35 @@ const Navbar = () => {
     const linkStyle = (path) => {
         const active = isActive(path);
         return active
-            ? 'text-blue-700 font-bold bg-blue-100 px-4 py-2 rounded-full'
-            : 'text-slate-600 hover:text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50';
+            ? 'text-[#8edee5] font-bold bg-white/10 px-4 py-2 rounded-full'
+            : 'text-slate-200 hover:text-white px-4 py-2 rounded-full hover:bg-white/10';
     };
 
     const quoteHref = user ? '/contact' : '/login?redirect=/contact';
 
     return (
-        <nav className="bg-blue-50 shadow-md sticky top-0 z-50 border-b border-blue-200">
+        <nav className="bg-black sticky top-0 z-50 border-b border-[#168ee9]/25 shadow-lg shadow-black/20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-20">
                     <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
                         <div className="flex items-center gap-3">
                             {headerData.logoImageUrl ? (
-                                <img src={headerData.logoImageUrl} alt="Logo" className="w-12 h-12 rounded-full" />
+                                <img src={headerData.logoImageUrl} alt="Logo" className="w-12 h-12 object-contain shrink-0" />
                             ) : (
-                                <div className="bg-yellow-400 p-2.5 rounded-full shadow-sm">
-                                    <IconStar />
+                                <div className="w-11 h-11 bg-white/10 text-[#8edee5] rounded-lg shadow-sm flex items-center justify-center font-serif text-xl">
+                                    K
                                 </div>
                             )}
                             <div className="flex flex-col">
                                 <div className="flex items-baseline gap-1">
-                                    <div className="text-2xl font-bold text-slate-800">{headerData.logoText}</div>
-                                    <span className="text-xs font-semibold text-gray-400 uppercase">{headerData.logoSubtext}</span>
+                                    <div className="text-xl font-bold tracking-tight text-white">{headerData.logoText}</div>
+                                    <span className="text-[10px] font-bold tracking-[0.18em] text-[#8edee5] uppercase">{headerData.logoSubtext}</span>
                                 </div>
                                 {headerData.tagline && (
                                     <div className="flex items-center gap-1.5 mt-0.5">
-                                        <span className="h-px w-4 bg-gray-300"></span>
-                                        <p className="text-xs text-gray-400">{headerData.tagline}</p>
-                                        <span className="h-px w-4 bg-gray-300"></span>
+                                        <span className="h-px w-4 bg-white/20"></span>
+                                        <p className="text-xs text-slate-400">{headerData.tagline}</p>
+                                        <span className="h-px w-4 bg-white/20"></span>
                                     </div>
                                 )}
                             </div>
@@ -167,10 +167,10 @@ const Navbar = () => {
                             </div>
                         ) : (
                             <div className="flex items-center gap-2 ml-4">
-                                <Link to="/login" className="text-slate-600 hover:text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50 font-semibold">
+                                <Link to="/login" className="text-slate-200 hover:text-white px-4 py-2 rounded-full hover:bg-white/10 font-semibold">
                                     {t('signIn')}
                                 </Link>
-                                <Link to={quoteHref} className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition shadow-lg">
+                                <Link to={quoteHref} className="bg-[#8edee5] text-[#102b3f] px-6 py-2.5 rounded-lg font-bold hover:bg-[#b4edf1] transition shadow-lg shadow-slate-950/20">
                                     {headerData.ctaButton}
                                 </Link>
                             </div>
@@ -180,7 +180,7 @@ const Navbar = () => {
                     <div className="md:hidden flex items-center">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="text-slate-600 hover:text-blue-600 p-2"
+                            className="text-white hover:text-[#8edee5] p-2"
                             aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
                             aria-expanded={isOpen}
                         >
@@ -191,12 +191,12 @@ const Navbar = () => {
             </div>
 
             {isOpen && (
-                <div className="md:hidden bg-blue-50 border-t border-blue-200">
+                <div className="md:hidden bg-black border-t border-[#168ee9]/25">
                     <div className="px-4 pt-2 pb-4">
-                        <Link to="/" className={`block px-4 py-3 rounded-xl ${isActive('/') ? 'text-blue-700 bg-blue-100' : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50'}`} onClick={() => setIsOpen(false)}>{t('home')}</Link>
-                        <Link to="/services" className={`block px-4 py-3 rounded-xl ${isActive('/services') ? 'text-blue-700 bg-blue-100' : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50'}`} onClick={() => setIsOpen(false)}>{t('services')}</Link>
-                        <Link to="/blog" className={`block px-4 py-3 rounded-xl ${isActive('/blog') ? 'text-blue-700 bg-blue-100' : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50'}`} onClick={() => setIsOpen(false)}>{t('blog')}</Link>
-                        <Link to="/contact" className={`block px-4 py-3 rounded-xl ${isActive('/contact') ? 'text-blue-700 bg-blue-100' : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50'}`} onClick={() => setIsOpen(false)}>{t('contact')}</Link>
+                        <Link to="/" className={`block px-4 py-3 rounded-xl ${isActive('/') ? 'text-[#8edee5] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/10'}`} onClick={() => setIsOpen(false)}>{t('home')}</Link>
+                        <Link to="/services" className={`block px-4 py-3 rounded-xl ${isActive('/services') ? 'text-[#8edee5] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/10'}`} onClick={() => setIsOpen(false)}>{t('services')}</Link>
+                        <Link to="/blog" className={`block px-4 py-3 rounded-xl ${isActive('/blog') ? 'text-[#8edee5] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/10'}`} onClick={() => setIsOpen(false)}>{t('blog')}</Link>
+                        <Link to="/contact" className={`block px-4 py-3 rounded-xl ${isActive('/contact') ? 'text-[#8edee5] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/10'}`} onClick={() => setIsOpen(false)}>{t('contact')}</Link>
 
                         {user && (
                             <>
@@ -217,9 +217,9 @@ const Navbar = () => {
 
                         {!user && (
                             <>
-                                <div className="border-t border-blue-200 my-2"></div>
-                                <Link to="/login" className="block px-4 py-3 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50 font-semibold" onClick={() => setIsOpen(false)}>{t('signIn')}</Link>
-                                <Link to={quoteHref} className="block px-4 py-3 rounded-xl text-blue-600 bg-white text-center mt-2 font-bold border border-blue-100" onClick={() => setIsOpen(false)}>{headerData.ctaButton}</Link>
+                                <div className="border-t border-white/10 my-2"></div>
+                                <Link to="/login" className="block px-4 py-3 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 font-semibold" onClick={() => setIsOpen(false)}>{t('signIn')}</Link>
+                                <Link to={quoteHref} className="block px-4 py-3 rounded-xl text-[#102b3f] bg-[#8edee5] text-center mt-2 font-bold" onClick={() => setIsOpen(false)}>{headerData.ctaButton}</Link>
                             </>
                         )}
                     </div>

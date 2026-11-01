@@ -285,23 +285,22 @@ const Contact = () => {
 
   if (loading || !contactInfo) {
     return (
-      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
-      </div>
+      <div className="site-loader" aria-label="Loading"><span /></div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-blue-50">
+    <div className="min-h-screen inner-page quote-page">
       {/* Header Banner */}
-      <div className="bg-blue-600 py-16">
+      <div className="inner-page-hero">
         <div className="max-w-7xl mx-auto px-4 text-center">
+          <p className="inner-page-kicker">Persönlich. Klar. Unverbindlich.</p>
           <h1 className="text-4xl font-bold text-white mb-4">{t('getYourFreeQuote')}</h1>
           <p className="text-blue-100 text-lg">{t('contactIntro')}</p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="quote-page-body max-w-7xl mx-auto px-4 py-16">
         {error && (
           <div className="mb-6 p-4 bg-red-100 text-red-800 rounded-lg">
             {error}
@@ -324,9 +323,9 @@ const Contact = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="quote-layout grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* LEFT SIDE - Contact Info */}
-          <div className="space-y-6">
+          <div className="quote-contact-list space-y-6">
             <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-blue-500">
               <h2 className="text-2xl font-bold text-blue-900">{contactInfo.companyName}</h2>
               <p className="text-slate-500 mt-1">{t('professionalCleaningServices')}</p>
@@ -406,7 +405,7 @@ const Contact = () => {
           </div>
 
           {/* RIGHT SIDE - Form */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8 border border-slate-100">
+          <div className="quote-form-card bg-white rounded-3xl shadow-2xl p-8 border border-slate-100">
             {!user ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600">
@@ -414,7 +413,7 @@ const Contact = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-slate-800 mb-3">{t('signInToRequestQuote')}</h3>
                 <p className="text-slate-600 max-w-md mx-auto mb-8">{t('signInToRequestQuoteHelp')}</p>
-                <Link to="/login?redirect=/contact" className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg">
+                <Link to="/login?redirect=/contact" className="inner-primary-button">
                   {t('continueToSignIn')}
                   <IconArrowRight />
                 </Link>
@@ -499,7 +498,7 @@ const Contact = () => {
                   <label className="block text-sm font-bold text-slate-700 mb-2">{t('yourMessage')}</label>
                   <textarea rows={5} placeholder={t('messagePlaceholder')} className="w-full px-5 py-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none resize-none" value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })}></textarea>
                 </div>
-                <button type="submit" disabled={status === 'sending'} className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg disabled:opacity-70 flex items-center justify-center gap-2">
+                <button type="submit" disabled={status === 'sending'} className="quote-submit">
                   {status === 'sending' ? t('sending') : t('requestFreeQuote')}
                   <IconArrowRight />
                 </button>

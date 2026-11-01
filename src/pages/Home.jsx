@@ -1,47 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { IconLeaf, IconShield, IconCalendar, IconUsers, IconCheck, IconArrowRight, IconStar } from '../components/Icons';
-import { useLanguage } from '../context/LanguageContext';
+import { IconArrowRight, IconCalendar, IconCheck, IconLeaf, IconShield, IconUsers } from '../components/Icons';
+
+const defaults = {
+    heroTitle: 'Saubere Kitas. Sichere Räume. Jeden Tag.',
+    heroSubtitle: 'Spezialisierte Kita-Reinigung in München & Umgebung',
+    heroDescription: 'Zuverlässige Unterhaltsreinigung mit einem geschulten Team, klaren Abläufen und besonderem Blick für sensible Bereiche.',
+    heroImage: '',
+    ctaButtonText: 'Kostenloses Angebot anfragen',
+    features: [
+        { title: 'Kindgerechte Reinigung', desc: 'Sorgfältig ausgewählte Mittel für sensible Kita-Bereiche.' },
+        { title: 'Verlässlich geplant', desc: 'Feste Abläufe, transparente Kommunikation, klare Zuständigkeiten.' },
+        { title: 'Flexible Zeiten', desc: 'Reinigung passend zu Ihrem Kita-Alltag und Ihren Öffnungszeiten.' },
+        { title: 'Geschultes Team', desc: 'Sorgfalt und Diskretion bei jedem einzelnen Einsatz.' }
+    ],
+    processSteps: [
+        { step: '01', title: 'Kennenlernen', desc: 'Sie schildern uns kurz Ihre Räume und Anforderungen.' },
+        { step: '02', title: 'Vor-Ort-Termin', desc: 'Wir prüfen Flächen, Rhythmus und sensible Bereiche.' },
+        { step: '03', title: 'Ihr Plan', desc: 'Sie erhalten ein klares, individuelles Angebot.' },
+        { step: '04', title: 'Sauber starten', desc: 'Unser Team übernimmt zuverlässig zum vereinbarten Termin.' }
+    ]
+};
+
+const serviceCards = [
+    { number: '01', title: 'Kita & Kindergarten', desc: 'Hygienische Gruppenräume, Sanitärbereiche, Flure und Spielflächen – abgestimmt auf Ihren Tagesablauf.', accent: 'lime' },
+    { number: '02', title: 'Büro & Verwaltung', desc: 'Gepflegte Arbeitsplätze und Gemeinschaftsflächen für ein professionelles Umfeld.', accent: 'blue' },
+    { number: '03', title: 'Grund- & Sonderreinigung', desc: 'Intensive Reinigung bei Übergaben, Ferienzeiten oder besonderem Bedarf.', accent: 'sand' }
+];
 
 const Home = () => {
-    const { t } = useLanguage();
-    const [content, setContent] = useState({
-        heroTitle: 'Professional Cleaning for Every Space',
-        heroSubtitle: 'Child-safe cleaning for nurseries and kindergartens',
-        heroDescription: 'We create clean, safe, and healthy environments where children can learn, employees can work, and families can thrive.',
-        heroImage: '',
-        ctaButtonText: 'Request a Quote',
-        features: [
-            { title: 'Eco-Friendly', desc: 'Non-toxic, child-safe cleaning products.' },
-            { title: 'Fully Insured', desc: 'Complete protection and peace of mind.' },
-            { title: 'Flexible Schedule', desc: 'Daily, weekly, or custom cleaning plans.' },
-            { title: 'Trained Staff', desc: 'Background-checked cleaning experts.' }
-        ],
-        bannerSection: {
-            title: 'Trusted by Schools & Businesses',
-            description: 'Over 500+ happy clients trust us with their cleaning needs.',
-            image1: '',
-            image2: ''
-        },
-        processSteps: [
-            { step: '1', title: 'Request a Quote', desc: 'Tell us about your space and cleaning needs.' },
-            { step: '2', title: 'We Plan', desc: 'We create a customized cleaning plan for you.' },
-            { step: '3', title: 'We Clean', desc: 'Our trained team cleans with care and attention.' },
-            { step: '4', title: 'You Enjoy', desc: 'A clean, safe, and happy environment every day.' }
-        ]
-    });
-    const [loading, setLoading] = useState(true);
+    const [content, setContent] = useState(defaults);
+    const [loading, setLoading] = useState(false);
+    const [activeSlide, setActiveSlide] = useState(0);
+    const [sliderPaused, setSliderPaused] = useState(false);
 
     useEffect(() => {
         const fetchContent = async () => {
             try {
-                const docRef = doc(db, 'siteContent', 'home');
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    setContent(prev => ({ ...prev, ...docSnap.data() }));
-                }
+                const snap = await getDoc(doc(db, 'siteContent', 'home'));
+                if (snap.exists()) setContent(prev => ({ ...prev, ...snap.data() }));
             } catch (error) {
                 console.error('Error fetching home content:', error);
             } finally {
@@ -51,222 +50,111 @@ const Home = () => {
         fetchContent();
     }, []);
 
-    const iconMap = {
-        'Eco-Friendly': <IconLeaf />,
-        'Fully Insured': <IconShield />,
-        'Flexible Schedule': <IconCalendar />,
-        'Trained Staff': <IconUsers />
-    };
+    const heroSlides = [...new Set([
+        content.heroImage,
+        content.bannerSection?.image1,
+        content.bannerSection?.image2
+    ].filter(Boolean))];
 
-    const servicesPreview = [
-        { title: "Kindergarten Cleaning", desc: "Safe, sanitized spaces for children to learn and play.", bgColor: "bg-blue-50", textColor: "text-blue-600", icon: "🏫" },
-        { title: "Office Cleaning", desc: "Boost productivity with a spotless work environment.", bgColor: "bg-green-50", textColor: "text-green-600", icon: "🏢" },
-        { title: "Deep Cleaning", desc: "Thorough disinfection for high-traffic areas.", bgColor: "bg-purple-50", textColor: "text-purple-600", icon: "✨" },
-        { title: "Window Cleaning", desc: "Crystal clear views for your property.", bgColor: "bg-orange-50", textColor: "text-orange-600", icon: "🪟" }
-    ];
+    useEffect(() => {
+        if (sliderPaused || heroSlides.length < 2) return undefined;
+        const interval = window.setInterval(() => {
+            setActiveSlide(current => (current + 1) % heroSlides.length);
+        }, 5000);
+        return () => window.clearInterval(interval);
+    }, [heroSlides.length, sliderPaused]);
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
-            </div>
-        );
-    }
+    useEffect(() => {
+        if (activeSlide >= heroSlides.length) setActiveSlide(0);
+    }, [activeSlide, heroSlides.length]);
+
+    const icons = [<IconLeaf />, <IconShield />, <IconCalendar />, <IconUsers />];
+    if (loading) return <div className="site-loader" aria-label="Loading"><span /></div>;
 
     return (
-        <div className="min-h-screen">
-            {/* Hero Section */}
-            <div className="bg-blue-50 py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
-                    <div className="md:w-1/2">
-                        <div className="inline-block bg-white text-blue-700 px-4 py-1 rounded-full text-sm font-bold mb-6 shadow-sm border border-blue-200">
-                            ✨ {content.heroSubtitle}
+        <main className="premium-home">
+            <section className="hero-premium">
+                <div className="hero-orb hero-orb-one" /><div className="hero-orb hero-orb-two" />
+                <div className="site-shell hero-grid">
+                    <div className="hero-copy">
+                        <p className="eyebrow"><span /> {content.heroSubtitle}</p>
+                        <h1>{content.heroTitle}</h1>
+                        <p className="hero-lead">{content.heroDescription}</p>
+                        <div className="hero-actions">
+                            <Link to="/contact" className="premium-button premium-button-primary">{content.ctaButtonText}<IconArrowRight /></Link>
+                            <Link to="/services" className="premium-button premium-button-ghost">Leistungen ansehen</Link>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mb-6">
-                            {content.heroTitle}
-                        </h1>
-                        <p className="text-lg text-slate-600 mb-8 max-w-lg">
-                            {content.heroDescription}
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <Link to="/contact" className="bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-700 transition shadow-lg text-center flex items-center justify-center gap-2">
-                                {content.ctaButtonText}
-                                <IconArrowRight />
-                            </Link>
-                            <Link to="/services" className="bg-white text-blue-600 border-2 border-blue-200 px-8 py-4 rounded-full font-bold text-lg hover:border-blue-400 transition text-center">
-                                {t('ourServices')}
-                            </Link>
-                        </div>
-                        <div className="flex items-center gap-6 mt-10">
-                            <div className="flex items-center gap-2 text-sm text-slate-500">
-                                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"><IconCheck /></div>
-                                <span>500+ {t('clients')}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-slate-500">
-                                <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center"><IconStar /></div>
-                                <span>4.9 {t('rating')}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-slate-500">
-                                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"><IconShield /></div>
-                                <span>{t('insured')}</span>
-                            </div>
-                        </div>
+                        <div className="hero-assurance"><span><IconCheck /> Unverbindliche Anfrage</span><span><IconCheck /> Persönliche Betreuung</span></div>
                     </div>
-                    <div className="md:w-1/2 mt-12 md:mt-0">
-                        <div className="bg-white p-4 rounded-2xl shadow-xl">
-                            {content.heroImage ? (
-                                <img src={content.heroImage} alt="Hero" className="rounded-xl w-full h-64 md:h-80 object-cover" />
-                            ) : (
-                                <div className="bg-slate-100 rounded-xl w-full h-64 md:h-80 flex items-center justify-center">
-                                    <div className="text-center">
-                                        <span className="text-6xl">🧹</span>
-                                        <p className="text-slate-400 mt-4">{t('professionalCleaningServices')}</p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                    <div
+                        className="hero-visual"
+                        aria-label="Professionelle Kita-Reinigung"
+                        onMouseEnter={() => setSliderPaused(true)}
+                        onMouseLeave={() => setSliderPaused(false)}
+                        onFocus={() => setSliderPaused(true)}
+                        onBlur={() => setSliderPaused(false)}
+                    >
+                        {heroSlides.length ? <div className="hero-slides">
+                            {heroSlides.map((image, index) => (
+                                <img
+                                    key={image}
+                                    src={image}
+                                    alt={`Professionelle Kita-Reinigung – Ansicht ${index + 1}`}
+                                    className={index === activeSlide ? 'active' : ''}
+                                    aria-hidden={index !== activeSlide}
+                                />
+                            ))}
+                        </div> : (
+                            <div className="clean-scene"><div className="scene-window"><i /><i /><i /></div><div className="scene-surface"><span /><span /><span /></div><div className="scene-shine shine-one">✦</div><div className="scene-shine shine-two">✦</div></div>
+                        )}
+                        {heroSlides.length > 1 && <div className="slider-controls" aria-label="Hero-Bilder auswählen">
+                            {heroSlides.map((image, index) => (
+                                <button
+                                    type="button"
+                                    key={image}
+                                    className={index === activeSlide ? 'active' : ''}
+                                    onClick={() => setActiveSlide(index)}
+                                    aria-label={`Bild ${index + 1} anzeigen`}
+                                    aria-current={index === activeSlide ? 'true' : undefined}
+                                />
+                            ))}
+                        </div>}
+                        <div className="visual-note"><span className="note-icon"><IconShield /></span><span><strong>Sorgfältig bis ins Detail</strong><small>Für Räume, in denen Kinder wachsen</small></span></div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Features Strip */}
-            <div className="bg-white py-16 border-b border-slate-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {content.features.map((f, i) => (
-                            <div key={i} className="flex items-start gap-4 p-6 rounded-xl bg-slate-50 hover:bg-white hover:shadow-lg transition border border-transparent hover:border-slate-100">
-                                <div className="p-3 bg-white shadow rounded-lg text-blue-600">
-                                    {iconMap[f.title] || <IconCheck />}
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-slate-800 text-lg">{f.title}</h3>
-                                    <p className="text-sm text-slate-500 mt-2">{f.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            <section className="trust-strip"><div className="site-shell trust-grid">
+                {(content.features || defaults.features).slice(0, 4).map((feature, index) => (
+                    <article className="trust-item" key={`${feature.title}-${index}`}><span className="trust-icon">{icons[index]}</span><div><h3>{feature.title}</h3><p>{feature.desc}</p></div></article>
+                ))}
+            </div></section>
 
-            {/* Services Preview */}
-            <div className="py-20 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-4">{t('ourCleaningServices')}</h2>
-                        <p className="text-slate-500 text-lg">{t('servicesPreviewIntro')}</p>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {servicesPreview.map((s, i) => (
-                            <div key={i} className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition border border-slate-100">
-                                <div className={`w-14 h-14 ${s.bgColor} ${s.textColor} rounded-2xl flex items-center justify-center mb-4 text-3xl`}>
-                                    {s.icon}
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-800 mb-2">{s.title}</h3>
-                                <p className="text-slate-500 mb-4">{s.desc}</p>
-                                <Link to="/services" className="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1">
-                                    {t('learnMore')} <IconArrowRight />
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            <section className="premium-section services-premium"><div className="site-shell">
+                <div className="section-heading split-heading"><div><p className="eyebrow dark"><span /> Unsere Leistungen</p><h2>Reinigung, die zu Ihren Räumen passt.</h2></div><p>Kein Standardpaket von der Stange. Wir schauen genau hin und entwickeln einen Ablauf, der im Alltag wirklich funktioniert.</p></div>
+                <div className="premium-service-grid">{serviceCards.map(card => (
+                    <article className={`premium-service-card accent-${card.accent}`} key={card.number}><span className="service-number">{card.number}</span><div className="service-rule" /><h3>{card.title}</h3><p>{card.desc}</p><Link to="/services" aria-label={`${card.title} mehr erfahren`}>Mehr erfahren <IconArrowRight /></Link></article>
+                ))}</div>
+            </div></section>
 
-            {/* Banner Section with Images */}
-            <div className="py-16 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-blue-600 rounded-3xl overflow-hidden shadow-2xl">
-                        <div className="flex flex-col md:flex-row">
-                            <div className="md:w-1/2 p-12 flex flex-col justify-center">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                                    {content.bannerSection?.title || 'Trusted by Schools & Businesses'}
-                                </h2>
-                                <p className="text-blue-100 text-lg mb-8">
-                                    {content.bannerSection?.description || 'Over 500+ happy clients trust us with their cleaning needs.'}
-                                </p>
-                                <div className="flex gap-4">
-                                    <div className="text-center">
-                                        <p className="text-4xl font-bold text-white">500+</p>
-                                        <p className="text-blue-200 text-sm">{t('happyClients')}</p>
-                                    </div>
-                                    <div className="text-center">
-                                        <p className="text-4xl font-bold text-white">50+</p>
-                                        <p className="text-blue-200 text-sm">{t('schools')}</p>
-                                    </div>
-                                    <div className="text-center">
-                                        <p className="text-4xl font-bold text-white">99%</p>
-                                        <p className="text-blue-200 text-sm">{t('satisfaction')}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="md:w-1/2 flex">
-                                {content.bannerSection?.image1 ? (
-                                    <img src={content.bannerSection.image1} alt="Banner 1" className="w-1/2 h-80 object-cover" />
-                                ) : (
-                                    <div className="w-1/2 h-80 bg-blue-500 flex items-center justify-center text-6xl">🧹</div>
-                                )}
-                                {content.bannerSection?.image2 ? (
-                                    <img src={content.bannerSection.image2} alt="Banner 2" className="w-1/2 h-80 object-cover" />
-                                ) : (
-                                    <div className="w-1/2 h-80 bg-blue-400 flex items-center justify-center text-6xl">✨</div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <section className="premium-section why-section"><div className="site-shell why-grid">
+                <div className="why-panel"><p className="why-kicker">Kita Clean Standard</p><blockquote>„Sauberkeit soll man nicht nur sehen. Man soll sich auf sie verlassen können.“</blockquote><div className="why-badge"><IconLeaf /><span>Bewusst reinigen<br/><small>Verantwortungsvoll handeln</small></span></div></div>
+                <div className="why-copy"><p className="eyebrow dark"><span /> Warum Kita Clean</p><h2>Verlässlichkeit beginnt mit klaren Abläufen.</h2><p>Gerade in Einrichtungen für Kinder zählt mehr als ein sauberer Eindruck. Deshalb verbinden wir gründliche Arbeit mit verbindlicher Planung und direkter Kommunikation.</p><ul>
+                    <li><IconCheck /><span><strong>Feste Ansprechpartner</strong>Kurze Wege und persönliche Betreuung.</span></li>
+                    <li><IconCheck /><span><strong>Individuelle Reinigungspläne</strong>Auf Räume, Nutzung und Rhythmus abgestimmt.</span></li>
+                    <li><IconCheck /><span><strong>Qualität mit Blick fürs Detail</strong>Damit sensible Bereiche zuverlässig gepflegt sind.</span></li>
+                </ul></div>
+            </div></section>
 
-            {/* Stats Banner */}
-            <div className="py-16 bg-blue-600">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                        <div className="bg-white/10 rounded-2xl p-8">
-                            <p className="text-5xl font-bold text-white mb-2">500+</p>
-                            <p className="text-blue-100">{t('happyClients')}</p>
-                        </div>
-                        <div className="bg-white/10 rounded-2xl p-8">
-                            <p className="text-5xl font-bold text-white mb-2">50+</p>
-                            <p className="text-blue-100">{t('schoolsServed')}</p>
-                        </div>
-                        <div className="bg-white/10 rounded-2xl p-8">
-                            <p className="text-5xl font-bold text-white mb-2">99%</p>
-                            <p className="text-blue-100">{t('satisfaction')}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <section className="premium-section process-premium"><div className="site-shell">
+                <div className="section-heading centered-heading"><p className="eyebrow dark"><span /> So starten wir</p><h2>In vier Schritten zu sauberen Räumen.</h2></div>
+                <div className="process-grid">{(content.processSteps || defaults.processSteps).map((item, index) => (
+                    <article className="process-card" key={`${item.step}-${index}`}><span>{String(item.step).padStart(2, '0')}</span><h3>{item.title}</h3><p>{item.desc}</p></article>
+                ))}</div>
+            </div></section>
 
-            {/* Process Section */}
-            <div className="py-20 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-4">{t('ourSimpleProcess')}</h2>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        {content.processSteps.map((item, i) => (
-                            <div key={i} className="text-center">
-                                <div className="w-20 h-20 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                                    <span className="text-2xl font-bold text-white">{item.step}</span>
-                                </div>
-                                <h3 className="text-lg font-bold text-slate-800 mb-2">{item.title}</h3>
-                                <p className="text-slate-500 text-sm">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* CTA Section */}
-            <div className="bg-blue-600 py-16">
-                <div className="max-w-4xl mx-auto px-4 text-center">
-                    <h2 className="text-3xl font-bold text-white mb-6">{t('readyCleanerSpace')}</h2>
-                    <Link to="/contact" className="inline-flex items-center gap-2 bg-white text-blue-600 px-10 py-4 rounded-full font-bold text-lg hover:bg-blue-50 transition shadow-lg">
-                        {t('getYourFreeQuote')}
-                        <IconArrowRight />
-                    </Link>
-                </div>
-            </div>
-        </div>
+            <section className="premium-cta"><div className="site-shell cta-inner"><div><p className="eyebrow"><span /> Bereit für den nächsten Schritt?</p><h2>Lassen Sie uns über Ihre Räume sprechen.</h2><p>Unverbindlich anfragen. Persönlich beraten lassen. Klarheit bekommen.</p></div><Link to="/contact" className="premium-button premium-button-light">Angebot anfragen <IconArrowRight /></Link></div></section>
+        </main>
     );
 };
 

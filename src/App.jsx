@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy, useLayoutEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AdminProvider } from './context/AdminContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -25,16 +25,25 @@ const AdminQuotes = lazy(() => import('./pages/admin/AdminQuotes'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 
 const PageLoader = () => (
-    <div className="min-h-[55vh] bg-white flex items-center justify-center">
-        <div className="h-12 w-12 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"></div>
-    </div>
+    <div className="site-loader" aria-label="Loading"><span /></div>
 );
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+        const root = document.documentElement;
+        const previousBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
         window.scrollTo(0, 0);
+        root.scrollTop = 0;
+        document.body.scrollTop = 0;
+        const frame = window.requestAnimationFrame(() => {
+            window.scrollTo(0, 0);
+            root.style.scrollBehavior = previousBehavior;
+        });
+
+        return () => window.cancelAnimationFrame(frame);
     }, [pathname]);
 
     return null;

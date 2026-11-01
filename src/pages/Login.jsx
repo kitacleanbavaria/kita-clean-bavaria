@@ -95,8 +95,8 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4">
-            <div className="bg-white p-8 md:p-12 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
+        <div className="login-page min-h-screen flex items-center justify-center py-12 px-4">
+            <div className="login-card bg-white p-8 md:p-12 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
                 <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-slate-800">
                         {isLogin ? 'Welcome Back' : 'Create Account'}
@@ -178,7 +178,7 @@ const Login = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition shadow-md disabled:opacity-50"
+                        className="quote-submit"
                     >
                         {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Sign Up')}
                     </button>
@@ -188,7 +188,7 @@ const Login = () => {
                     {isLogin ? "Don't have an account? " : "Already have an account? "}
                     <button
                         onClick={() => setIsLogin(!isLogin)}
-                        className="text-blue-600 font-semibold hover:underline"
+                        className="text-[#277f91] font-semibold hover:underline"
                     >
                         {isLogin ? 'Sign Up' : 'Sign In'}
                     </button>

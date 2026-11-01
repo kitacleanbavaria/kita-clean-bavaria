@@ -56,12 +56,12 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-slate-900 text-slate-300 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div className="col-span-1 md:col-span-1">
+    <footer className="site-footer">
+      <div className="footer-main max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="footer-brand">
           <div className="flex items-center gap-2 mb-4">
             {footerData.logoImageUrl ? (
-              <img src={footerData.logoImageUrl} alt={`${footerData.logoText} logo`} className="w-12 h-12 rounded-full object-cover" />
+              <img src={footerData.logoImageUrl} alt={`${footerData.logoText} logo`} className="w-12 h-12 object-contain" />
             ) : (
               <div className="bg-yellow-400 p-1.5 rounded-full">
                 <IconStar />
@@ -74,7 +74,7 @@ const Footer = () => {
               )}
             </div>
           </div>
-          <p className="text-sm text-slate-400 mb-4">{footerData.tagline}</p>
+          <p className="footer-tagline">{footerData.tagline}</p>
           <div className="flex space-x-4">
             {footerData.facebook && (
               <a href={footerData.facebook} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition cursor-pointer">f</a>
@@ -88,9 +88,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div>
+        <div className="footer-quick-links">
           <h3 className="text-white font-semibold mb-4">{t('quickLinks')}</h3>
-          <ul className="space-y-2 text-sm">
+          <ul>
             <li><Link to="/" className="hover:text-white transition">{t('home')}</Link></li>
             <li><Link to="/services" className="hover:text-white transition">{t('services')}</Link></li>
             <li><Link to="/blog" className="hover:text-white transition">{t('blog')}</Link></li>
@@ -98,9 +98,9 @@ const Footer = () => {
           </ul>
         </div>
 
-        <div>
+        <div className="footer-services">
           <h3 className="text-white font-semibold mb-4">{t('services')}</h3>
-          <ul className="space-y-2 text-sm">
+          <ul>
             <li><Link to="/services" className="hover:text-white transition">{t('kindergartenCleaning')}</Link></li>
             <li><Link to="/services" className="hover:text-white transition">{t('officeCleaning')}</Link></li>
             <li><Link to="/services" className="hover:text-white transition">{t('deepCleaning')}</Link></li>
@@ -108,9 +108,9 @@ const Footer = () => {
           </ul>
         </div>
 
-        <div>
+        <div className="footer-contact">
           <h3 className="text-white font-semibold mb-4">{t('contactUs')}</h3>
-          <ul className="space-y-2 text-sm">
+          <ul>
             <li className="flex items-center gap-2">📞 {footerData.phone}</li>
             <li className="flex items-center gap-2">✉️ {footerData.email}</li>
             <li className="flex items-center gap-2">📍 {footerData.address}</li>
@@ -118,11 +118,9 @@ const Footer = () => {
           </ul>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
-        <div className="mb-3">
-          <Link to="/impressum" className="hover:text-white transition">Impressum</Link>
-        </div>
-        © {new Date().getFullYear()} {footerData.companyName} Reinigung. {t('allRightsReserved')}
+      <div className="footer-bottom max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <span>© {new Date().getFullYear()} {footerData.companyName} Reinigung. {t('allRightsReserved')}</span>
+        <Link to="/impressum" className="hover:text-white transition">Impressum</Link>
       </div>
     </footer>
   );
