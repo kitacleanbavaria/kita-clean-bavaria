@@ -6,13 +6,13 @@ import { useLanguage } from '../context/LanguageContext';
 const Footer = () => {
   const { t } = useLanguage();
   const [footerData, setFooterData] = useState({
-    companyName: 'Isarkita',
+    companyName: 'Kitaclean Bavaria',
     logoImageUrl: '',
-    logoText: 'Isarkita',
+    logoText: 'Kita Clean',
     logoSubtext: 'REINIGUNG',
     tagline: 'Professional cleaning for kindergartens, offices, and homes. Safe, reliable, and eco-friendly.',
     phone: '+49 123 456 789',
-    email: 'info@isarkita.de',
+    email: 'kitacleanbavaria@gmail.com',
     address: 'Munich, Germany',
     hours: 'Mon - Fri: 8:00 - 18:00',
     facebook: '',

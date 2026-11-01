@@ -132,8 +132,16 @@ const Blog = () => {
             </div>
 
             {selectedPost && (
-                <div className="fixed inset-0 z-50 bg-slate-900/70 px-4 py-6 overflow-y-auto">
-                    <div className="blog-modal max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <div className="fixed inset-0 z-50 bg-slate-900/70 px-3 sm:px-4 py-3 sm:py-6 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="blog-modal-title">
+                    <div className="blog-modal relative max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+                        <button
+                            type="button"
+                            onClick={() => setSelectedPost(null)}
+                            className="absolute right-3 top-3 z-10 grid min-h-11 min-w-11 place-items-center rounded-full bg-black/70 text-2xl leading-none text-white shadow-lg hover:bg-black"
+                            aria-label="Close article"
+                        >
+                            ×
+                        </button>
                         {getPostImageUrl(selectedPost) && (
                             <img
                                 src={getPostImageUrl(selectedPost)}
@@ -155,7 +163,7 @@ const Blog = () => {
                                     {selectedPost.category}
                                 </span>
                             </div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-slate-800 mb-4">
+                            <h2 id="blog-modal-title" className="text-2xl md:text-3xl font-bold text-slate-800 mb-4">
                                 {selectedPost.title}
                             </h2>
                             <div className="space-y-4 text-slate-600 leading-7">

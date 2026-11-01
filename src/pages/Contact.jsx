@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
-import { Link } from 'react-router-dom';
 import { IconArrowRight, IconPhone, IconMail, IconMapPin, IconClock, IconWhatsApp, IconFacebook, IconInstagram, IconTwitter } from '../components/Icons';
 import { useLanguage } from '../context/LanguageContext';
 import { useAdmin } from '../context/AdminContext';
@@ -93,6 +92,7 @@ const Contact = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [botMessage, setBotMessage] = useState('');
+  const [submittedEmail, setSubmittedEmail] = useState('');
 
   useEffect(() => {
     const fetchContactInfo = async () => {
@@ -112,9 +112,9 @@ const Contact = () => {
         }
         if (data) {
           setContactInfo({
-            companyName: data.companyName || data.company || 'Isarkita',
+            companyName: data.companyName || data.company || 'Kitaclean Bavaria',
             phone: data.phone || data.phoneNumber || '+49 123 456 789',
-            email: data.email || 'info@isarkita.de',
+            email: data.email || 'kitacleanbavaria@gmail.com',
             address: data.address || 'Munich, Germany',
             hours: data.hours || data.businessHours || 'Mon - Fri: 8:00 - 18:00',
             facebook: data.facebook || '',
@@ -124,9 +124,9 @@ const Contact = () => {
           });
         } else {
           setContactInfo({
-            companyName: 'Isarkita',
+            companyName: 'Kitaclean Bavaria',
             phone: '+49 123 456 789',
-            email: 'info@isarkita.de',
+            email: 'kitacleanbavaria@gmail.com',
             address: 'Munich, Germany',
             hours: 'Mon - Fri: 8:00 - 18:00',
             facebook: '',
@@ -139,9 +139,9 @@ const Contact = () => {
         console.error('Error:', err);
         setError('Error loading data: ' + err.message);
         setContactInfo({
-          companyName: 'Isarkita',
+          companyName: 'Kitaclean Bavaria',
           phone: '+49 123 456 789',
-          email: 'info@isarkita.de',
+          email: 'kitacleanbavaria@gmail.com',
           address: 'Munich, Germany',
           hours: 'Mon - Fri: 8:00 - 18:00',
           facebook: '',
@@ -181,10 +181,10 @@ const Contact = () => {
       const templateParams = {
         to_name: quoteData.name,
         email: quoteData.email,
-        from_name: contactInfo?.companyName || 'Isarkita',
+        from_name: contactInfo?.companyName || 'Kitaclean Bavaria',
         service_type: quoteData.service || 'cleaning services',
         quote_details: quoteDetailsText(quoteData),
-        reply_to: contactInfo?.email || 'info@isarkita.de',
+        reply_to: contactInfo?.email || 'kitacleanbavaria@gmail.com',
       };
 
       await emailjs.send(
@@ -204,7 +204,7 @@ const Contact = () => {
     try {
       const templateParams = {
         to_email: EMAILJS_CONFIG.ADMIN_EMAIL,
-        from_name: contactInfo?.companyName || 'Isarkita',
+        from_name: contactInfo?.companyName || 'Kitaclean Bavaria',
         customer_name: quoteData.name,
         customer_email: quoteData.email,
         customer_phone: quoteData.phone || 'Not provided',
@@ -239,25 +239,23 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user) {
-      setStatus('login-required');
-      return;
-    }
-
     setStatus('sending');
     setBotMessage('');
+    setSubmittedEmail(formData.email);
 
     try {
-      // 1. Save quote to Firebase
-      const quoteRef = await addDoc(collection(db, "quotes"), {
-        ...formData,
-        userId: auth.currentUser?.uid || user.uid,
-        userEmail: auth.currentUser?.email || user.email || formData.email,
-        status: 'new',
-        createdAt: serverTimestamp()
-      });
-
-      console.log('Quote saved:', quoteRef.id);
+      // Signed-in customers keep a quote history in the customer portal.
+      // Public visitors can still request a quote without creating an account.
+      if (user) {
+        const quoteRef = await addDoc(collection(db, "quotes"), {
+          ...formData,
+          userId: auth.currentUser?.uid || user.uid,
+          userEmail: auth.currentUser?.email || user.email || formData.email,
+          status: 'new',
+          createdAt: serverTimestamp()
+        });
+        console.log('Quote saved:', quoteRef.id);
+      }
 
       // 2. Send auto-reply to customer
       await sendCustomerAutoReply(formData);
@@ -317,7 +315,7 @@ const Contact = () => {
               <div>
                 <p className="font-bold text-green-800 mb-1">Auto-Reply Bot</p>
                 <p className="text-green-700">{botMessage}</p>
-                <p className="text-sm text-green-500 mt-2">Email sent to {formData.email || 'your email'}</p>
+                <p className="text-sm text-green-500 mt-2">Email sent to {submittedEmail || 'your email'}</p>
               </div>
             </div>
           </div>
@@ -406,19 +404,7 @@ const Contact = () => {
 
           {/* RIGHT SIDE - Form */}
           <div className="quote-form-card bg-white rounded-3xl shadow-2xl p-8 border border-slate-100">
-            {!user ? (
-              <div className="text-center py-12">
-                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600">
-                  <IconMail />
-                </div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-3">{t('signInToRequestQuote')}</h3>
-                <p className="text-slate-600 max-w-md mx-auto mb-8">{t('signInToRequestQuoteHelp')}</p>
-                <Link to="/login?redirect=/contact" className="inner-primary-button">
-                  {t('continueToSignIn')}
-                  <IconArrowRight />
-                </Link>
-              </div>
-            ) : status === 'success' ? (
+            {status === 'success' ? (
               <div className="text-center py-16">
                 <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
                   <span className="text-5xl">🎉</span>
@@ -431,6 +417,11 @@ const Contact = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {status === 'error' && (
+                  <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                    We could not send your request. Please try again or contact us by phone or email.
+                  </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">{t('fullName')} *</label>

@@ -77,6 +77,11 @@ const Navbar = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        setIsOpen(false);
+        setDropdownOpen(false);
+    }, [location.pathname]);
+
     const isActive = (path) => {
         if (path === '/') {
             return location.pathname === '/';
@@ -91,14 +96,14 @@ const Navbar = () => {
             : 'text-slate-200 hover:text-white px-4 py-2 rounded-full hover:bg-white/10';
     };
 
-    const quoteHref = user ? '/contact' : '/login?redirect=/contact';
+    const quoteHref = '/contact';
 
     return (
         <nav className="bg-black sticky top-0 z-50 border-b border-[#168ee9]/25 shadow-lg shadow-black/20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-20">
-                    <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-                        <div className="flex items-center gap-3">
+                    <div className="min-w-0 flex items-center cursor-pointer" onClick={() => navigate('/')}>
+                        <div className="min-w-0 flex items-center gap-2 sm:gap-3">
                             {headerData.logoImageUrl ? (
                                 <img src={headerData.logoImageUrl} alt="Logo" className="w-12 h-12 object-contain shrink-0" />
                             ) : (
@@ -106,9 +111,9 @@ const Navbar = () => {
                                     K
                                 </div>
                             )}
-                            <div className="flex flex-col">
+                            <div className="min-w-0 flex flex-col">
                                 <div className="flex items-baseline gap-1">
-                                    <div className="text-xl font-bold tracking-tight text-white">{headerData.logoText}</div>
+                                    <div className="truncate text-lg sm:text-xl font-bold tracking-tight text-white">{headerData.logoText}</div>
                                     <span className="text-[10px] font-bold tracking-[0.18em] text-[#8edee5] uppercase">{headerData.logoSubtext}</span>
                                 </div>
                                 {headerData.tagline && (
@@ -122,7 +127,7 @@ const Navbar = () => {
                         </div>
                     </div>
 
-                    <div className="hidden md:flex items-center space-x-2">
+                    <div className="hidden xl:flex items-center space-x-2">
                         <Link to="/" className={linkStyle('/')}>{t('home')}</Link>
                         <Link to="/services" className={linkStyle('/services')}>{t('services')}</Link>
                         <Link to="/blog" className={linkStyle('/blog')}>{t('blog')}</Link>
@@ -137,7 +142,7 @@ const Navbar = () => {
                                     <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                                         {getAvatarLetter()}
                                     </div>
-                                    <span className="text-sm font-medium text-slate-700">{getUserName()}</span>
+                                    <span className="text-sm font-medium text-slate-700">Customer Portal</span>
                                     <span>▼</span>
                                 </button>
 
@@ -166,21 +171,19 @@ const Navbar = () => {
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center gap-2 ml-4">
-                                <Link to="/login" className="text-slate-200 hover:text-white px-4 py-2 rounded-full hover:bg-white/10 font-semibold">
-                                    {t('signIn')}
-                                </Link>
-                                <Link to={quoteHref} className="bg-[#8edee5] text-[#102b3f] px-6 py-2.5 rounded-lg font-bold hover:bg-[#b4edf1] transition shadow-lg shadow-slate-950/20">
-                                    {headerData.ctaButton}
-                                </Link>
-                            </div>
+                            <Link to="/login" className="text-slate-200 hover:text-white px-4 py-2 rounded-full hover:bg-white/10 font-semibold ml-4">
+                                Customer Portal
+                            </Link>
                         )}
+                        <Link to={quoteHref} className="bg-[#8edee5] text-[#102b3f] px-6 py-2.5 rounded-lg font-bold hover:bg-[#b4edf1] transition shadow-lg shadow-slate-950/20">
+                            {headerData.ctaButton}
+                        </Link>
                     </div>
 
-                    <div className="md:hidden flex items-center">
+                    <div className="xl:hidden flex items-center">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="text-white hover:text-[#8edee5] p-2"
+                            className="text-white hover:text-[#8edee5] min-h-11 min-w-11 p-3"
                             aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
                             aria-expanded={isOpen}
                         >
@@ -191,7 +194,14 @@ const Navbar = () => {
             </div>
 
             {isOpen && (
-                <div className="md:hidden bg-black border-t border-[#168ee9]/25">
+                <>
+                <button
+                    type="button"
+                    className="fixed inset-x-0 bottom-0 top-20 z-0 bg-black/35 xl:hidden"
+                    onClick={() => setIsOpen(false)}
+                    aria-label="Close navigation menu"
+                />
+                <div className="relative z-10 xl:hidden bg-black border-t border-[#168ee9]/25 shadow-2xl">
                     <div className="px-4 pt-2 pb-4">
                         <Link to="/" className={`block px-4 py-3 rounded-xl ${isActive('/') ? 'text-[#8edee5] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/10'}`} onClick={() => setIsOpen(false)}>{t('home')}</Link>
                         <Link to="/services" className={`block px-4 py-3 rounded-xl ${isActive('/services') ? 'text-[#8edee5] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/10'}`} onClick={() => setIsOpen(false)}>{t('services')}</Link>
@@ -200,30 +210,32 @@ const Navbar = () => {
 
                         {user && (
                             <>
-                                <div className="border-t border-blue-200 my-2"></div>
-                                <div className="px-4 py-2 text-sm text-slate-500">{t('signedInAs')} {user.email}</div>
-                                <Link to="/quotes" className="block px-4 py-3 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50" onClick={() => setIsOpen(false)}>{t('myQuotes')}</Link>
-                                <Link to="/services" className="block px-4 py-3 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50" onClick={() => setIsOpen(false)}>{t('bookService')}</Link>
-                                <Link to="/settings" className="block px-4 py-3 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50" onClick={() => setIsOpen(false)}>{t('accountSettings')}</Link>
+                                <div className="border-t border-white/10 my-2"></div>
+                                <div className="px-4 py-2 text-sm font-bold text-[#8edee5]">Customer Portal</div>
+                                <div className="px-4 py-2 text-sm text-slate-400 break-all">{t('signedInAs')} {user.email}</div>
+                                <Link to="/quotes" className="block px-4 py-3 rounded-xl text-slate-200 hover:text-white hover:bg-white/10" onClick={() => setIsOpen(false)}>{t('myQuotes')}</Link>
+                                <Link to="/services" className="block px-4 py-3 rounded-xl text-slate-200 hover:text-white hover:bg-white/10" onClick={() => setIsOpen(false)}>{t('bookService')}</Link>
+                                <Link to="/settings" className="block px-4 py-3 rounded-xl text-slate-200 hover:text-white hover:bg-white/10" onClick={() => setIsOpen(false)}>{t('accountSettings')}</Link>
 
                                 {/* ADMIN PANEL LINK - MOBILE */}
                                 {isAdmin && (
                                     <Link to="/admin" className="block px-4 py-3 rounded-xl text-purple-600 hover:bg-purple-50 font-bold" onClick={() => setIsOpen(false)}>{t('adminPanel')}</Link>
                                 )}
 
-                                <button onClick={() => { handleLogout(); setIsOpen(false); }} className="block w-full text-left px-4 py-3 rounded-xl text-red-600 hover:bg-red-50">{t('logout')}</button>
+                                <button onClick={() => { handleLogout(); setIsOpen(false); }} className="block w-full min-h-11 text-left px-4 py-3 rounded-xl text-red-300 hover:bg-white/10">{t('logout')}</button>
                             </>
                         )}
 
                         {!user && (
                             <>
                                 <div className="border-t border-white/10 my-2"></div>
-                                <Link to="/login" className="block px-4 py-3 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 font-semibold" onClick={() => setIsOpen(false)}>{t('signIn')}</Link>
+                                <Link to="/login" className="block px-4 py-3 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 font-semibold" onClick={() => setIsOpen(false)}>Customer Portal</Link>
                                 <Link to={quoteHref} className="block px-4 py-3 rounded-xl text-[#102b3f] bg-[#8edee5] text-center mt-2 font-bold" onClick={() => setIsOpen(false)}>{headerData.ctaButton}</Link>
                             </>
                         )}
                     </div>
                 </div>
+                </>
             )}
         </nav>
     );

@@ -28,10 +28,10 @@ const AdminHomeEditor = () => {
             { step: '4', title: 'You Enjoy', desc: 'A clean, safe, and happy environment every day.' }
         ],
         footer: {
-            companyName: 'Isarkita',
+            companyName: 'Kitaclean Bavaria',
             tagline: 'Professional cleaning for kindergartens, offices, and homes. Safe, reliable, and eco-friendly.',
             phone: '+49 123 456 789',
-            email: 'info@isarkita.de',
+            email: 'kitacleanbavaria@gmail.com',
             address: 'Munich, Germany',
             hours: 'Mon - Fri: 8:00 - 18:00',
             facebook: '',

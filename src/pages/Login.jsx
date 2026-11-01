@@ -98,11 +98,14 @@ const Login = () => {
         <div className="login-page min-h-screen flex items-center justify-center py-12 px-4">
             <div className="login-card bg-white p-8 md:p-12 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
                 <div className="text-center mb-8">
+                    <p className="inner-page-kicker mb-3">Secure customer access</p>
                     <h2 className="text-3xl font-bold text-slate-800">
-                        {isLogin ? 'Welcome Back' : 'Create Account'}
+                        {isLogin ? 'Kitaclean Customer Portal' : 'Create Your Portal Account'}
                     </h2>
                     <p className="text-slate-500 mt-2">
-                        Access your quotes and manage bookings.
+                        {isLogin
+                            ? 'Sign in to view your quote history and account settings. More portal features are being prepared.'
+                            : 'Create an account to keep your quote history in one secure place.'}
                     </p>
                 </div>
 

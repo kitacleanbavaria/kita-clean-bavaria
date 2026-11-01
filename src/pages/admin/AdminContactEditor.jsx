@@ -4,9 +4,9 @@ import { db } from '../../firebase/config';
 
 const AdminContactEditor = () => {
     const [info, setInfo] = useState({
-        companyName: 'Isarkita Reinigung',
+        companyName: 'Kitaclean Bavaria',
         phone: '+49 123 456 789',
-        email: 'info@isarkita.de',
+        email: 'kitacleanbavaria@gmail.com',
         address: 'Munich, Bavaria, Germany',
         hours: 'Mon - Fri: 8:00 - 18:00',
         facebook: '',
